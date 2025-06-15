@@ -1,20 +1,144 @@
-```文档持续更新中```
-为什么写这个项目，纯粹是因为外面的呢ai面试收费太贵了😡，学生党用不起，这个项目直接开放给学校的学生，用户可以自选模型，自己写提示词，用多少钱干多少事
+# AI 面试辅助项目
 
-```项目技术栈```
-trpc，nextjs15，react19，shadecn，Polar/支付宝/微信。nenodb，openai，stream，CodeRabbit，DrizzleORM，TanStaclQuery，
-PostgreSQL，authjs，Ingest。
-```技术栈作用```
-nextjs和React构建我们的全栈框架，支持服务器组件和服务器端渲染，trpc用于全栈类型，安全性与TanStackQuery、DrizzleORM以及Neon提供的PostgreSQL数据库一起使用。使用Tailwind版本4进行样式设计，结合ChatsUI实现可访问且可重用的组件，使用BetterOut进行身份验证，Polar进行支付，Stream用于视频和聊天，Ingest用于后台作业，CodeRabbit用于人工智能，支持代码审查，最后使用OpenAI实现实时代理和人工智能驱动的功能。
+## 项目背景与初衷
 
-```功能```
-🤖 AI 驱动的视频通话🧠 自定义实时代理📞 流视频 SDK💬 流聊天 SDK📝 摘要、成绩单、录音📂 会议历史记录和状态🔍 成绩单搜索📺 视频回放💬 AI 会议问答🧠 OpenAI 集成💳 Polar 订阅🔐 Better Auth 登录📱 移动响应🌐 Next.js 15 + React 19🎨 Tailwind v4 + Shadcn/ui⚙️ Inngest 后台作业🧑‍💻 CodeRabbit PR 评论时间戳
+💡 **为什么开发这个项目？**
 
-```如何启动```
-创建env.local文件，（注意不要创建.env）nextjs似乎无法识别env，只能识别.env.local至少我试了很多方法他都无法识别
+校外 AI 面试服务收费高昂，学生群体难以负担。本项目致力于为在校学生提供免费 / 低成本的 AI 面试工具，支持**自选模型**、**自定义提示词**，真正实现 "按使用付费" 的灵活模式。
 
-(如果你都不想要这些，github和google完全不用管)
-github登录，获取clientId和clientSecret，https://github.com/settings/developers
-google登录，这里有点bug，可以暂时不考虑
+## 项目技术栈
 
-填写数据库地址DATABASE_URL = "",本项目使用的nenodb，https://console.neon.tech/app/projects
+### 核心框架
+
+* **Next.js 15 + React 19**：构建全栈应用，支持服务器组件与 SSR
+* **tRPC**：全栈类型安全的 API 通信方案
+* **Shadcn/ui**：基于 Tailwind CSS v4 的可访问性 UI 组件库
+
+### 数据与存储
+
+* **NeonDB + PostgreSQL**：无服务器数据库服务
+* **DrizzleORM**：类型安全的 ORM 工具
+* **TanStack Query**：数据获取与缓存管理
+
+### 功能模块
+
+* **OpenAI**：实时代理与 AI 驱动功能（GPT 模型集成）
+* **CodeRabbit**：AI 代码审查与 PR 评论
+* **Stream**：视频通话与聊天实时流服务
+* **Ingest**：后台作业处理系统
+* **Auth.js**：身份验证解决方案
+* **Polar**：订阅与支付系统（支持支付宝 / 微信）
+
+## 技术栈详细作用
+
+| 技术栈 | 核心作用 |
+| :--- | :--- |
+| Next.js + React | 构建全栈框架，支持服务器组件渲染与客户端交互 |
+| tRPC | 提供类型安全的 API 通信，保障前后端数据交互的安全性与一致性 |
+| NeonDB + PostgreSQL | 提供无服务器数据库服务，支持高可用性与弹性扩展 |
+| DrizzleORM | 实现类型安全的数据库操作，简化 SQL 查询并提升开发效率 |
+| Tailwind CSS v4 + Shadcn/ui | 构建可复用、可访问的 UI 组件，实现响应式设计与现代化交互体验 |
+| OpenAI | 集成 GPT 模型，实现 AI 面试生成、实时对话处理与智能分析功能 |
+| Stream | 提供视频通话与聊天的实时流 SDK，支持低延迟通信与多人会话 |
+| Ingest | 处理后台异步作业，如会议记录生成、文件处理与系统通知 |
+| CodeRabbit | 集成 AI 代码审查功能，支持面试代码题的自动评估与优化建议 |
+
+## 核心功能特性
+
+🤖 **AI 驱动面试体验**
+
+* 智能生成面试问题与场景模拟
+* 实时语音 / 文本交互的 AI 面试官
+* 面试表现自动分析与改进建议
+
+📞 **实时交互能力**
+
+* 视频通话 SDK（支持 1v1 / 多人群面）
+* 实时聊天消息流（文字 / 表情互动）
+* 屏幕共享与代码实时编辑功能
+
+📊 **面试辅助工具**
+
+* 面试内容自动摘要与成绩单生成
+* 历史面试记录归档与状态管理
+* 关键词搜索与面试片段定位
+* 视频回放与进度控制
+
+💻 **高级集成能力**
+
+* 多模型支持（可自选模型）
+* 代码面试题自动评估（CodeRabbit 集成）
+* 自定义 AI 代理配置（支持提示词工程）
+
+💰 **灵活付费模式**
+
+* 多平台支付支持（支付宝 / 微信 / 信用卡/国外信用卡）
+* 价格根据所选模型消耗计算。
+
+### 环境配置
+
+1. **创建环境文件**
+
+在项目根目录创建 `.env.local` 文件（**注意：非 `.env`**），Next.js 仅识别此文件格式，我试了很多方法都识别不了
+2. **配置认证信息**
+
+* **GitHub 登录**
+
+前往 [GitHub 开发者设置](https://github.com/settings/developers) 获取：
+
+bash
+
+```
+GITHUB_ID=your_client_id
+GITHUB_SECRET=your_client_secret
+```
+* **Google 登录**（当前存在已知问题，可暂不配置）
+3. **数据库配置**
+
+使用 [NeonDB](https://console.neon.tech/app/projects) 创建数据库并配置：
+
+bash
+
+```
+DATABASE_URL=postgresql://username:password@neon.tech/project-id/branch-name
+```
+
+### 启动命令
+
+bash
+
+```
+# 安装依赖
+pnpm install
+# 启动开发服务器
+pnpm dev
+#执行数据库迁移
+pnpm drizzle-kit generate
+```
+
+### 注意事项
+
+* 确保 Node.js 版本 >= 18.x
+* 首次启动时系统会自动初始化数据库表结构
+
+## 项目路线图
+
+🚧 **近期计划**
+
+* 完善基础面板搭建
+* 增加多语言面试支持（英 / 日 / 韩等）
+* 优化移动端适配体验
+
+✨ **未来规划**
+
+* 集成企业面试题库（大厂真题模拟）
+
+## 贡献与反馈
+
+📧 **问题反馈**
+
+如有使用问题或建议，欢迎通过项目 Issue 提交，或发送邮件至rongcaiyu124@gamil.com
+
+💻 **参与开发**
+
+本项目欢迎学生开发者贡献代码
