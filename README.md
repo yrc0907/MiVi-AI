@@ -1,7 +1,7 @@
-···文档持续更新中···
+```文档持续更新中```
 为什么写这个项目，纯粹是因为外面的呢ai面试收费太贵了😡，学生党用不起，这个项目直接开放给学校的学生，用户可以自选模型，自己写提示词，用多少钱干多少事
 
-···项目技术栈···
+```项目技术栈```
 trpc，nextjs15，react19，shadecn，Polar/支付宝/微信。nenodb，openai，stream，CodeRabbit，DrizzleORM，TanStaclQuery，
 PostgreSQL，authjs，Ingest。
 ```技术栈作用```
