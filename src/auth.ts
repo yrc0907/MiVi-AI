@@ -7,19 +7,21 @@ import Github from "next-auth/providers/github";
 import bcrypt from "bcryptjs";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { DefaultSession } from "next-auth";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
   session: { strategy: "jwt" },
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET ?? "some-secret",
+  trustHost: true,
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
     Github({
-      clientId: process.env.GITHUB_CLIENT_ID ?? "Ov23liW0QMvZMThvi2Cw",
-      clientSecret: process.env.GITHUB_CLIENT_SECRET ?? "06898567f2f3f63642246c79faabb6637dd60b94",
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
     }),
     Credentials({
       name: "Sign in",
@@ -53,3 +55,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
 });
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+    } & DefaultSession["user"];
+  }
+}
