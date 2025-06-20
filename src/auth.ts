@@ -16,12 +16,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.APP_GOOGLE_CLIENT_ID,
+      clientSecret: process.env.APP_GOOGLE_CLIENT_SECRET,
+
     }),
     Github({
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      clientId: process.env.APP_GITHUB_CLIENT_ID,
+      clientSecret: process.env.APP_GITHUB_CLIENT_SECRET,
     }),
     Credentials({
       name: "Sign in",
