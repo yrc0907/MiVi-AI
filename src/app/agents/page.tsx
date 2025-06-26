@@ -5,6 +5,8 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AgentsPage() {
   const quertClinet = getQueryClient();
   await quertClinet.prefetchQuery(trpc.agents.getMany.queryOptions());
