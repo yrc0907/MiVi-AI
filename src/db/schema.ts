@@ -62,4 +62,15 @@ export const verificationTokens = pgTable(
       columns: [verficationToken.identifier, verficationToken.token],
     }),
   })
-); 
+);
+
+export const agents = pgTable("agents", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
+});

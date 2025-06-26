@@ -1,9 +1,6 @@
-import { auth, signOut } from "@/auth";
 import { Search } from "lucide-react";
 
 export default async function Home() {
-  const session = await auth();
-  const userName = session?.user?.name || "John Doe";
 
   return (
     <div className="h-full flex flex-col">
@@ -23,29 +20,8 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-start pt-6 md:pt-12 px-4">
-        <div className="w-full max-w-lg">
-          <h3 className="text-lg font-medium mb-4 md:mb-6">Logged in as {userName}</h3>
-
-          {session?.user ? (
-            <form
-              action={async () => {
-                "use server";
-                await signOut();
-              }}
-            >
-              <button
-                type="submit"
-                className="w-full rounded-md bg-green-500 hover:bg-green-600 py-3 text-white font-medium"
-              >
-                Sign out
-              </button>
-            </form>
-          ) : (
-            <p>You are not signed in.</p>
-          )}
-        </div>
+      <div>
+        <h1>HomeView</h1>
       </div>
     </div>
   );
