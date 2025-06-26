@@ -3,8 +3,7 @@ import { ErrorState } from "@/components/common/error-state";
 import { LoadingState } from "@/components/common/loading-state";
 // import { ErrorState } from "@/components/common/error-state";
 // import { LoadingState } from "@/components/common/loading-state";
-import { useTRPC } from "@/components/trpc/client"
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { trpc } from "@/components/trpc/client";
 
 // export const AgentView = () => {
 //   const trpc = useTRPC();
@@ -19,10 +18,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 // }
 
 export const AgentView = () => {
-  const trpc = useTRPC();
-  const data = useSuspenseQuery(trpc.agents.getMany.queryOptions());
+  const [data] = trpc.agents.getMany.useSuspenseQuery();
   return <div>
-    {data.data?.map((agent) => (
+    {data.map((agent) => (
       <div key={agent.id}>{agent.name}</div>
     ))}
   </div>

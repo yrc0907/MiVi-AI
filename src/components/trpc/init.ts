@@ -32,6 +32,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   }
   return next({
     ctx: {
+      ...ctx,
       // infers the `session` as non-nullable
       session: { ...ctx.session, user: ctx.session.user },
     },
