@@ -4,6 +4,7 @@ import {
   text,
   primaryKey,
   integer,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "next-auth/adapters";
 
@@ -71,6 +72,28 @@ export const agents = pgTable("agents", {
     .references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   description: text("description").notNull(),
+  createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
+});
+
+export const meetingStatus = pgEnum("meetingStatus", ["upcoming", "active", "completed", "processing", "cancelled"]);
+
+export const meetings = pgTable("meetings", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  agentId: text("agentId")
+    .notNull()
+    .references(() => agents.id, { onDelete: "cascade" }),
+  status: meetingStatus("status").notNull().default("upcoming"),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  startAt: timestamp("startAt", { mode: "date" }).notNull(),
+  endAt: timestamp("endAt", { mode: "date" }).notNull(),
+  transcriptUrl: text("transcriptUrl"),
+  recordingUrl: text("recordingUrl"),
+  summary: text("summary"),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
 });
