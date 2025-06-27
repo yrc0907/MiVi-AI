@@ -4,7 +4,7 @@ import { LoadingState } from "@/components/common/loading-state";
 // import { ErrorState } from "@/components/common/error-state";
 // import { LoadingState } from "@/components/common/loading-state";
 import { trpc } from "@/components/trpc/client";
-import { Bot, MoreHorizontal, Pencil, Trash2, Video, Loader2 } from "lucide-react";
+import { Bot, MoreHorizontal, Pencil, Trash2, Video, Loader2, Search } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import type { agents } from "@/db/schema";
 import { ModifyAgentDialog } from "../components/modify-agent-dialog";
@@ -19,6 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useDebounce } from 'use-debounce';
 
 type Agent = Omit<typeof agents.$inferSelect, "createdAt" | "updatedAt"> & {
   createdAt: string;
@@ -83,22 +84,19 @@ const AgentCard = ({ agent, onModify, onDelete, isDeleting }: { agent: Agent, on
   );
 }
 
-// export const AgentView = () => {
-//   const trpc = useTRPC();
-//   const data = useQuery(trpc.agents.getMany.queryOptions());
-//   if (data.isLoading) return <LoadingState title="Loading agents..." description="Please wait while we load the agents." />
-//   if (data.isError) return <ErrorState title="Error loading agents" description="Please try again later." />
-//   return <div>
-//     {data.data?.map((agent) => (
-//       <div key={agent.id}>{agent.name}</div>
-//     ))}
-//   </div>
-// }
-
-export const AgentView = () => {
+const AgentList = ({ search }: { search: string }) => {
   const [page, setPage] = useState(1);
   const pageSize = 5;
-  const [{ agents, pagination }, ,] = trpc.agents.getMany.useSuspenseQuery({ page, pageSize });
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  const { data, isLoading, isFetching, error } = trpc.agents.getMany.useQuery(
+    { page, pageSize, search },
+    { placeholderData: (previousData) => previousData }
+  );
+
   const utils = trpc.useUtils();
 
   const [modifyingAgent, setModifyingAgent] = useState<Agent | null>(null);
@@ -124,47 +122,68 @@ export const AgentView = () => {
     }
   };
 
-  return (
-    <>
-      <div className="p-4 sm:p-6 lg:p-8">
-        <div className="space-y-4">
-          {agents.map((agent) => (
-            <AgentCard
-              key={agent.id}
-              agent={agent}
-              onModify={() => setModifyingAgent(agent)}
-              onDelete={() => setDeletingAgent(agent)}
-              isDeleting={deleteAgentMutation.isPending && deleteAgentMutation.variables?.id === agent.id}
-            />
-          ))}
-        </div>
+  if (isLoading || !data) {
+    return <AgentViewLoading />;
+  }
 
-        {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between pt-6">
-            <div>
-              <p className="text-sm text-gray-700">
-                Page <span className="font-medium">{pagination.currentPage}</span> of <span className="font-medium">{pagination.totalPages}</span>
-              </p>
+  if (error) {
+    return <ErrorState title="Error loading agents" description={error.message} />;
+  }
+
+  const { agents, pagination } = data;
+
+  return (
+    <div className="space-y-4">
+      <div className="min-h-[340px] relative">
+        {isFetching && (
+          <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+            <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+          </div>
+        )}
+        {agents.length > 0 ? (
+          agents.map((agent: Agent) => (
+            <div key={agent.id} className="mb-4">
+              <AgentCard
+                agent={agent}
+                onModify={() => setModifyingAgent(agent)}
+                onDelete={() => setDeletingAgent(agent)}
+                isDeleting={deleteAgentMutation.isPending && deleteAgentMutation.variables?.id === agent.id}
+              />
             </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={pagination.currentPage === 1}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
-                disabled={pagination.currentPage === pagination.totalPages}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
+          ))
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No agents found.</p>
           </div>
         )}
       </div>
+
+      {pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between pt-6">
+          <div>
+            <p className="text-sm text-gray-700">
+              Page <span className="font-medium">{pagination.currentPage}</span> of <span className="font-medium">{pagination.totalPages}</span>
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={pagination.currentPage === 1 || isFetching}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+              disabled={pagination.currentPage === pagination.totalPages || isFetching}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
       {modifyingAgent && (
         <ModifyAgentDialog
           agent={modifyingAgent}
@@ -194,7 +213,28 @@ export const AgentView = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
+  )
+}
+
+export const AgentView = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery] = useDebounce(searchQuery, 300);
+
+  return (
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Search agents..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 transition"
+        />
+      </div>
+      <AgentList search={debouncedQuery} />
+    </div>
   )
 }
 

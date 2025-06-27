@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "@/components/trpc/init";
 import { db } from "@/db";
 import { agents } from "@/db/schema";
 import { agentSchema } from "../schema";
-import { count, eq } from "drizzle-orm";
+import { count, eq, and, ilike } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -16,20 +16,17 @@ export const agentsRouter = createTRPCRouter({
       z.object({
         page: z.number().min(1).default(1),
         pageSize: z.number().min(1).max(100).default(10),
+        search: z.string().optional(),
       })
     )
     .query(async ({ input, ctx }) => {
-      const { page, pageSize } = input;
+      const { page, pageSize, search } = input;
       const userId = ctx.session.user.id;
 
-      if (!userId) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "User is not authenticated.",
-        });
-      }
-
-      const whereCondition = eq(agents.userId, userId);
+      const whereCondition = and(
+        eq(agents.userId, userId),
+        search ? ilike(agents.name, `%${search}%`) : undefined
+      );
 
       const [totalCountResult] = await db
         .select({ count: count() })
