@@ -8,12 +8,12 @@ import { ErrorBoundary } from "react-error-boundary";
 export const dynamic = 'force-dynamic';
 
 export default async function AgentsPage() {
-  const quertClinet = getQueryClient();
-  await quertClinet.prefetchQuery(trpc.agents.getMany.queryOptions());
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(trpc.agents.getMany.queryOptions({ page: 1, pageSize: 5 }));
   return (
     <>
       <AgentsListHeader />
-      <HydrationBoundary state={dehydrate(quertClinet)}>
+      <HydrationBoundary state={dehydrate(queryClient)}>
         <Suspense fallback={<AgentViewLoading />}>
           <ErrorBoundary fallback={<AgentViewError />}>
             <AgentView />

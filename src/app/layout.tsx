@@ -4,6 +4,7 @@ import "./globals.css";
 import { TRPCReactProvider } from "@/components/trpc/client";
 import { auth } from "@/auth";
 import ClientLayout from "@/components/layout/ClientLayout";
+import { Toaster } from 'sonner';
 
 export default async function RootLayout({
   children,
@@ -18,6 +19,7 @@ export default async function RootLayout({
           className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
         >
           <ClientLayout session={session}>{children}</ClientLayout>
+          <Toaster position="top-right" richColors />
         </body>
       </html>
     </TRPCReactProvider>
