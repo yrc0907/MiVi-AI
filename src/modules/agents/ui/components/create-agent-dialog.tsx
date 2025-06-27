@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { agentSchema, type Agent } from "@/modules/agents/schema"
 import { trpc } from "@/components/trpc/client"
+import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
 import {
   Dialog,
@@ -43,21 +45,21 @@ export function CreateAgentDialog({
     },
   })
 
-  const createAgent = trpc.agents.create.useMutation({
-    onSuccess: () => {
-      alert("Agent created successfully")
+  const createAgentMutation = trpc.agents.create.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Agent "${data.name}" created successfully.`);
       form.reset()
       onSuccess?.()
       onClose()
     },
     onError: (error) => {
-      alert(`Failed to create agent: ${error.message}`)
+      toast.error(`Failed to create agent: ${error.message}`);
       console.error(error)
     },
   })
 
   async function onSubmit(data: Agent) {
-    createAgent.mutate(data)
+    createAgentMutation.mutate(data);
   }
 
   return (
@@ -106,12 +108,13 @@ export function CreateAgentDialog({
                 variant="outline"
                 onClick={onClose}
                 type="button"
-                disabled={createAgent.isPending}
+                disabled={createAgentMutation.isPending}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={createAgent.isPending}>
-                {createAgent.isPending ? "Creating..." : "Create"}
+              <Button type="submit" disabled={createAgentMutation.isPending}>
+                {createAgentMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {createAgentMutation.isPending ? "Creating..." : "Create"}
               </Button>
             </DialogFooter>
           </form>
